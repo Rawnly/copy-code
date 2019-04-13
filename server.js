@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 
-mongoose.connect("mongodb://127.0.0.1/syntax-clip");
+mongoose.connect(process.env.NODE_ENV === "production" ? process.env.MONGO_URL : "mongodb://127.0.0.1/syntax-clip");
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
