@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "NODE_ENV=devlopment node --inspect server.js",
-		"start": "NODE_ENV=production node server.js",
+		"start": "NODE_ENV=production next build && node server.js",
 		"build": "next build"
 	},
 	"dependencies": {
