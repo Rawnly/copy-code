@@ -14,7 +14,8 @@ body {
 	background: white;
 	color: #1d1d1d;
 
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+	line-height: 52px;
 	font-size: 18px;
 	font-weight: 400;
 }
@@ -77,11 +78,47 @@ section {
 }
 
 
-
-
 .hljs {
 	border-radius: 5px;
 	padding: 1.5em 2em !important;
 	width: 80vw;
 	max-width: 450px;
+}
+
+
+.w9 {
+	font-weight: 900;
+}
+
+.w7 {
+	font-weight: 700;
+}
+
+.w6 {
+	font-weight: 600;
+}
+
+.w5 {
+	font-weight: 500;
+}
+
+.w4 {
+	font-weight: 400;
+}
+
+.w3 {
+	font-weight: 300;
+}
+
+.w2 {
+	font-weight: 200;
+}
+
+.w1 {
+	font-weight: 100;
+}
+
+code {
+	background: #FF0080;
+	color: white;
 }

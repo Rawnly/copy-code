@@ -48,6 +48,19 @@
 	background: transparent;
 }
 
+.button.primary.white {
+	box-shadow: 0 8px 10px -2px rgba(255, 255, 255, .35);
+	background-color: #ffffff;
+	border: 1px solid #ffffff;
+	color: #111111;
+}
+
+.button.primary.white:hover {
+	box-shadow: 0 0px 10px -5px rgba(255, 255, 255, .35);
+	color: #ffffff;
+	background: transparent;
+}
+
 .button.secondary {
 	background-color: transparent;
 	border: 1px solid #999999;
@@ -102,3 +115,5 @@
 	background: #fafafa !important;
 	border-color: #eaeaea !important;
 }
+
+
