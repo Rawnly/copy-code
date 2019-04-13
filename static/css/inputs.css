@@ -1,0 +1,15 @@
+input:not(.title),
+textarea {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #e1e1e1;
+	color: #666666;
+	border-radius: 5px;
+	font-size: 1em;
+	transition: border-color .25s ease-in-out;
+}
+
+input:not(.title):focus,
+textarea:focus {
+	border-color: #999999;
+}

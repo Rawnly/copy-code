@@ -1,0 +1,10 @@
+{
+	"name": "gvmecode",
+	"type": "npm",
+	"version": 1,
+	"alias": "gvmecode.now.sh",
+	"public": true,
+	"env": {
+		"NODE_ENV": "production"
+	}
+}
