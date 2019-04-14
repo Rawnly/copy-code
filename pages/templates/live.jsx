@@ -6,6 +6,7 @@ import hljs from "highlight.js";
 import "highlight.js/styles/tomorrow-night.css";
 
 import DragAndDrop from "../../components/DragAndDrop";
+import Toast from "../../components/Toast";
 import withSocket from "../../components/withSocket";
 
 class Page extends Component {
@@ -19,6 +20,8 @@ class Page extends Component {
 		needsUpdate: true,
 		editorValue: "",
 		connectedUsers: 0,
+		showToast: false,
+		hasJoined: null,
 	};
 
 	hightlight(code) {
@@ -74,6 +77,13 @@ class Page extends Component {
 
 		// livecoding
 		this.props.socket.on("user:update", (count) => {
+			const hasJoined = count > this.state.connectedUsers;
+
+			this.setState({ showToast: true, hasJoined });
+			setTimeout(() => {
+				this.setState({ showToast: false });
+			}, 1000);
+
 			this.setState({
 				connectedUsers: count,
 			});
@@ -193,6 +203,9 @@ class Page extends Component {
 						</button>
 					</CopyToClipboard>
 				</div>
+				{this.state.connectedUsers > 1 && (
+					<Toast visible={this.state.showToast}>A user {this.state.hasJoined ? "joined" : "left"}.</Toast>
+				)}
 			</section>
 		);
 	}
