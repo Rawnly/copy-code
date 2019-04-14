@@ -28,12 +28,40 @@ const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
 /** Socket */
+let values = {};
 
 io.on("connection", (socket) => {
 	io.emit("user:update", io.engine.clientsCount);
 
-	socket.on("message", (data) => {
-		console.log({ data });
+	// join the room
+	socket.on("room:join", (data) => {
+		console.log("A user joined " + data.room);
+		socket.room = data.room;
+		socket.join(data.room);
+		io.sockets.in(data.room).emit("user:update", Object.keys(io.sockets.clients(() => data.room).sockets).length);
+	});
+
+	// request an update
+	socket.on("request-update", () => {
+		console.log(`A Socket has requested an update`);
+		io.sockets.to(socket.room).emit("request-update");
+	});
+
+	// clients in the rooms sends the update
+	socket.on("send-update", (value) => {
+		console.log(`Socket ${socket.id} sent an update`);
+		io.sockets.to(socket.room).emit("update-received", value);
+	});
+
+	// live coding
+	socket.on("client:text-update", (data) => {
+		socket.broadcast.to(socket.room).emit("server:text-update", data || "");
+	});
+
+	socket.on("room:leave", (data) => {
+		console.log("A user has left " + data.room);
+		io.sockets.in(data.room).emit("user:update", Object.keys(io.sockets.clients(() => data.room).sockets).length);
+		socket.leave(data.room);
 	});
 
 	socket.on("disconnect", () => {
@@ -89,6 +117,10 @@ nextApp.prepare().then(() => {
 		}
 
 		res.redirect(route);
+	});
+
+	app.get("/live/:room", async (req, res) => {
+		nextApp.render(req, res, "/templates/live", { room: req.params.room });
 	});
 
 	app.get("/:name", async (req, res) => {

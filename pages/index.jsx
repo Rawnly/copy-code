@@ -31,9 +31,24 @@ class Page extends Component {
 						Just <code>copy-paste</code> your file and click the share button
 					</small>
 				</div>
-				<Link href="/random">
-					<a className="button primary white">Get Started</a>
-				</Link>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						flexDirection: "row",
+					}}>
+					<Link href="/random">
+						<a style={{ margin: "0 10px" }} className="button primary white">
+							Get Started
+						</a>
+					</Link>
+					<Link href="/random/live">
+						<a style={{ margin: "0 10px" }} className="button warning">
+							Live Coding
+						</a>
+					</Link>
+				</div>
 				<small className="version">v1.0</small>
 				<small className="author">
 					{this.state.users > 0 ? (
