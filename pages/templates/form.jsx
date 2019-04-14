@@ -7,6 +7,7 @@ import "highlight.js/styles/tomorrow-night.css";
 import { withRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+import DragAndDrop from "../../components/DragAndDrop";
 import client from "../../common/utils/api";
 
 const isServer = () => typeof window === "undefined";
@@ -54,7 +55,7 @@ const Toast = ({ children, visible: v, isMouseOver, ...props }) => {
 
 const Page = ({
 	router: {
-		query: { name, content },
+		query: { name: qname, content },
 	},
 }) => {
 	const [editorValue, setEditorValue] = useState(isServer() && !content ? "" : content);
@@ -63,10 +64,13 @@ const Page = ({
 	const [orLanguage, setOrLanguage] = useState(null);
 	const [isToastVisible, setToastVisiblity] = useState(false);
 	const [mouseStatus, setMouseStatus] = useState(false);
+	const [name, setName] = useState(qname);
 
-	function readSingleFile(evt) {
+	function readSingleFile(files) {
 		//Retrieve the first (and only!) File from the FileList object
-		var f = evt.target.files[0];
+		const f = files[0];
+
+		if (f.name) setName(f.name);
 
 		if (f) {
 			var r = new FileReader();
@@ -136,26 +140,71 @@ const Page = ({
 
 	return (
 		<section style={{ background: "#111", color: "white" }}>
-			<h3>{name}</h3>
-			<Editor
-				readOnly={!!content}
-				value={isServer() ? "" : content ? content : editorValue ? editorValue : ""}
-				onValueChange={setEditorValue}
-				highlight={hightlight}
-				padding={25}
+			<h1
 				style={{
-					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 14,
+					margin: "0 auto",
+					display: "felx",
+					justifyContent: "center",
+					alignItems: "center",
+					flexDirection: "column",
+					marginBottom: !!content ? 15 : 0,
+				}}>
+				<input
+					readOnly={!!content}
+					placeholder={qname}
+					onChange={(e) => setName(e.target.value)}
+					onBlur={(e) => (e.target.value === "" ? setName(qname) : null)}
+					type="text"
+					value={name}
+					style={{
+						background: "none",
+						color: "white",
+						border: "none",
+						fontWeight: "bold",
+						textAlign: "center",
+					}}
+				/>
+				{!content && (
+					<p
+						style={{
+							textAlign: "center",
+							margin: 0,
+							padding: 0,
+							fontSize: 10,
+							marginTop: -21,
+							marginBottom: 15,
+						}}>
+						Click to edit
+					</p>
+				)}
+			</h1>
+			<DragAndDrop
+				handleDrop={readSingleFile}
+				style={{
 					width: "100%",
-					height: "90%",
-					lineHeight: 1.3,
-					border: "1px solid #222",
-					borderRadius: "10px",
-					marginBottom: 10,
-					overflowY: "scroll",
-				}}
-				textareaId="editor"
-			/>
+					height: "80%",
+				}}>
+				<Editor
+					readOnly={!!content}
+					value={isServer() ? "" : content ? content : editorValue ? editorValue : ""}
+					onValueChange={setEditorValue}
+					highlight={hightlight}
+					padding={25}
+					style={{
+						fontFamily: '"Fira code", "Fira Mono", monospace',
+						fontSize: 14,
+						width: "100%",
+						height: "100%",
+						lineHeight: 1.3,
+						border: "1px solid #222",
+						borderRadius: "10px",
+						marginBottom: 10,
+						overflowY: "scroll",
+					}}
+					textareaId="editor"
+				/>
+			</DragAndDrop>
+
 			<div
 				style={{
 					display: "flex",
@@ -223,7 +272,7 @@ const Page = ({
 					onMouseLeave={() => setMouseStatus(false)}
 					isMouseOver={mouseStatus}>
 					<div className="message">{window.location.href}</div>
-					<CopyToClipboard text={window.location.href} onClick={() => setToastVisiblity(false)}>
+					<CopyToClipboard text={`https://highlight.rawnly.com/${name}`} onClick={() => setToastVisiblity(false)}>
 						<button className="button small primary">Copy</button>
 					</CopyToClipboard>
 				</Toast>
