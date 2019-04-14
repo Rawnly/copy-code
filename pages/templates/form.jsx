@@ -64,7 +64,24 @@ const Page = ({
 	const [isToastVisible, setToastVisiblity] = useState(false);
 	const [mouseStatus, setMouseStatus] = useState(false);
 
+	function readSingleFile(evt) {
+		//Retrieve the first (and only!) File from the FileList object
+		var f = evt.target.files[0];
+
+		if (f) {
+			var r = new FileReader();
+			r.onload = function(e) {
+				var contents = e.target.result;
+				setEditorValue(contents);
+			};
+			r.readAsText(f);
+		} else {
+			alert("Failed to load file");
+		}
+	}
+
 	function hightlight(code) {
+		console.log(code);
 		if (!code) return "";
 
 		const highlightedCode = hljs.highlightAuto(code);
@@ -107,7 +124,6 @@ const Page = ({
 		e.preventDefault();
 
 		await client.create({ name, content: editorValue.trim(), language });
-		// window.location = "/";
 
 		setToastVisiblity(true);
 
@@ -117,14 +133,6 @@ const Page = ({
 	};
 
 	if (isServer()) return null;
-
-	console.log({ content, name, editorValue });
-
-	const getValue = () => {
-		if (isServer()) return "";
-		if (content) return content;
-		return editorValue;
-	};
 
 	return (
 		<section style={{ background: "#111", color: "white" }}>
@@ -195,7 +203,7 @@ const Page = ({
 			</div>
 			{content ? (
 				<CopyToClipboard text={content || editorValue}>
-					<button className="button highlight" style={{ alignSelf: "flex-end" }} onClick={() => false}>
+					<button className="button highlight full-on-mobile" style={{ alignSelf: "flex-end" }} onClick={() => false}>
 						<b>Copy to Clipboard</b>
 					</button>
 				</CopyToClipboard>
