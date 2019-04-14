@@ -4,7 +4,7 @@ workflow "New workflow" {
 }
 
 action "Deploy on Dokku" {
-  uses = "Dokku"
+  uses = "./github/dokku"
   secrets = ["SSH_KEY"]
   env = {
     APP_NAME = "highlight"
