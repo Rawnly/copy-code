@@ -5,6 +5,7 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import hljs from "highlight.js";
 import "highlight.js/styles/tomorrow-night.css";
 
+import DragAndDrop from "../../components/DragAndDrop";
 import withSocket from "../../components/withSocket";
 
 class Page extends Component {
@@ -26,6 +27,26 @@ class Page extends Component {
 		return highlightedCode.value;
 	}
 
+	readSingleFile = (files) => {
+		//Retrieve the first (and only!) File from the FileList object
+		const f = files[0];
+
+		if (f) {
+			var r = new FileReader();
+			r.onload = (e) => {
+				var contents = e.target.result;
+				if (contents) {
+					this.setState({
+						editorValue: contents,
+					});
+				}
+			};
+			r.readAsText(f);
+		} else {
+			alert("Failed to load file");
+		}
+	};
+
 	componentDidMount() {
 		// On a new connection
 		this.props.socket.emit("room:join", {
@@ -36,7 +57,7 @@ class Page extends Component {
 
 		// Receive the update
 		this.props.socket.on("update-received", (data) => {
-      console.log("UPDATE RECEIVED")
+			console.log("UPDATE RECEIVED");
 			if (this.state.needsUpdate) {
 				this.setState({
 					editorValue: data,
@@ -47,7 +68,7 @@ class Page extends Component {
 
 		// Send an update when requested
 		this.props.socket.on("request-update", () => {
-      console.log("UPDATE REQUEST RECEIVED")
+			console.log("UPDATE REQUEST RECEIVED");
 			this.props.socket.emit("send-update", this.state.editorValue);
 		});
 
@@ -86,24 +107,31 @@ class Page extends Component {
 					}}>
 					{this.props.room}
 				</h1>
-				<Editor
-					value={this.state.editorValue}
-					onValueChange={this.updateEditorValue}
-					highlight={this.hightlight}
-					padding={25}
+				<DragAndDrop
+					handleDrop={this.readSingleFile}
 					style={{
-						fontFamily: '"Fira code", "Fira Mono", monospace',
-						fontSize: 14,
 						width: "100%",
-						height: "100%",
-						lineHeight: 1.3,
-						border: "1px solid #222",
-						borderRadius: "10px",
-						marginBottom: 10,
-						overflowY: "scroll",
-					}}
-					textareaId="live-editor"
-				/>
+						height: "70%",
+					}}>
+					<Editor
+						value={this.state.editorValue}
+						onValueChange={this.updateEditorValue}
+						highlight={this.hightlight}
+						padding={25}
+						style={{
+							fontFamily: '"Fira code", "Fira Mono", monospace',
+							fontSize: 14,
+							width: "100%",
+							height: "100%",
+							lineHeight: 1.3,
+							border: "1px solid #222",
+							borderRadius: "10px",
+							marginBottom: 10,
+							overflowY: "scroll",
+						}}
+						textareaId="live-editor"
+					/>
+				</DragAndDrop>
 				<div
 					style={{
 						display: "flex",
@@ -121,7 +149,11 @@ class Page extends Component {
 							fontSize: 14,
 							width: 250,
 						}}>
-						Users in the room: {this.state.connectedUsers}
+						{this.state.connectedUsers > 1 ? (
+							<>Users in the room: {this.state.connectedUsers}</>
+						) : (
+							<>No other users... Invite someone!</>
+						)}
 					</small>
 					<small
 						style={{
@@ -142,11 +174,25 @@ class Page extends Component {
 						</a>
 					</small>
 				</div>
-				<CopyToClipboard text={this.state.editorValue}>
-					<button className="button highlight full-on-mobile" style={{ alignSelf: "center" }} onClick={() => false}>
-						<b>Copy to Clipboard</b>
-					</button>
-				</CopyToClipboard>
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						flexDirection: "row",
+						width: "100%",
+					}}>
+					<CopyToClipboard text={`https://hightlight.rawnly.com/${this.props.room}`}>
+						<button className="button warning" style={{ alignSelf: "flex-start" }}>
+							<b>Invite People</b>
+						</button>
+					</CopyToClipboard>
+					<CopyToClipboard text={this.state.editorValue}>
+						<button className="button highlight" style={{ alignSelf: "flex-end" }}>
+							<b>Copy to Clipboard</b>
+						</button>
+					</CopyToClipboard>
+				</div>
 			</section>
 		);
 	}

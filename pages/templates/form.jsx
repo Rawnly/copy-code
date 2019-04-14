@@ -112,12 +112,11 @@ const Page = ({
 
 			if (content) {
 				if (name && content) deleteNote();
-
 				editor.setAttribute("placeholder", `// Whoops! No Code!`);
 			} else {
 				editor.setAttribute(
 					"placeholder",
-					`// Just write some code,\n// the language will be automatically detected\n// Syntax highlight provided by Highlight.js`,
+					`// Write some code, or drag and drop a file inside the editor\n// Syntax highlight provided by Highlight.js`,
 				);
 			}
 
@@ -127,6 +126,8 @@ const Page = ({
 
 	const submit = async (e) => {
 		e.preventDefault();
+
+		if (!editorValue) return;
 
 		await client.create({ name, content: editorValue.trim(), language });
 

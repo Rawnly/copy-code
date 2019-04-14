@@ -43,7 +43,7 @@ class Page extends Component {
 							Get Started
 						</a>
 					</Link>
-					<Link href="/random/live">
+					<Link href="/random/room">
 						<a style={{ margin: "0 10px" }} className="button warning">
 							Live Coding
 						</a>
