@@ -7,6 +7,7 @@ import "highlight.js/styles/tomorrow-night.css";
 import { withRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+import withSocket from "../../components/withSocket";
 import DragAndDrop from "../../components/DragAndDrop";
 import client from "../../common/utils/api";
 
@@ -281,4 +282,4 @@ const Page = ({
 	);
 };
 
-export default withRouter(Page);
+export default withRouter(withSocket(Page));
