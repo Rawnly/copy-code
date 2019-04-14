@@ -122,3 +122,76 @@ code {
 	background: #FF0080;
 	color: white;
 }
+
+.toast-area {
+	position: fixed;
+	bottom: 25px;
+	right: 25px;
+	max-width: 420px;
+	z-index: 2000;
+	transition: transform 0.4s ease 0s;
+}
+
+
+.message {
+	margin-top: -1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.toast {
+	-webkit-box-align: center;
+  -webkit-box-pack: justify;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 5px;
+  border-width: 0;
+  box-shadow: rgba(255, 255, 255,.12) 0 4px 9px;
+  color: #000;
+  display: flex;
+  font-size: 14px;
+  height: 60px;
+  justify-content: space-between;
+  padding: 0 20px;
+	width: 420px;
+}
+
+.toast:not(:last-of-type) {
+	margin: 10px 0;
+}
+
+
+.version {
+	position: absolute;
+	bottom: 10px;
+	right: 25px;
+	transition: all .15s ease-in-out;
+	opacity: 0.3;
+}
+
+.version:hover {
+	opacity: 1;
+}
+
+
+.author {
+	position: absolute;
+	bottom: 10px;
+	left: 25px;
+	transition: all .15s ease-in-out;
+	opacity: 0.3;
+}
+
+
+a {
+	color: #0080ff;
+}
+
+small a {
+	text-decoration: none;
+	color: inherit;
+	position: relative;
+	transition: all .15se ease-in-out;
+}

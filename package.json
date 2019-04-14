@@ -33,5 +33,8 @@
 		"react-highlight": "^0.12.0",
 		"react-monaco-editor": "^0.22.0",
 		"react-simple-code-editor": "^0.9.10"
+	},
+	"devDependencies": {
+		"@zeit/next-typescript": "^1.1.1"
 	}
 }

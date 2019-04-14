@@ -1,9 +1,12 @@
 import React from "react";
 import Link from "next/link";
 
+import "../styles/link.scss";
+
 const Page = () => {
 	return (
 		<section style={{ background: "#111", color: "#fff" }}>
+			<div className="toast-area" />
 			<div
 				style={{
 					display: "flex",
@@ -20,6 +23,13 @@ const Page = () => {
 			<Link href="/random">
 				<a className="button primary white">Get Started</a>
 			</Link>
+			<small className="version">v1.0</small>
+			<small className="author">
+				Made with a ⌨️ by{" "}
+				<a className={"underline"} href="https://github.com/rawnly">
+					Federico Vitale
+				</a>
+			</small>
 		</section>
 	);
 };
