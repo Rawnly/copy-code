@@ -1,11 +1,18 @@
-const Express = require("express");
+const app = require("express")();
 const next = require("next");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
 
-mongoose.connect(process.env.NODE_ENV === "production" ? process.env.MONGO_URL : "mongodb://127.0.0.1/syntax-clip");
+const { Clipboard } = require("./db/index");
+const apiRoutes = require("./server/routes/api");
+const dev = process.env.NODE_ENV !== "production";
+const PORT = process.env.PORT || 3000;
+
+mongoose.connect(!dev ? process.env.MONGO_URL : "mongodb://127.0.0.1/syntax-clip");
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 
@@ -17,26 +24,57 @@ db.on("disconnected", () => {
 	console.log("DB Disconnected");
 });
 
-const { Clipboard } = require("./db/index");
+const nextApp = next({ dev });
+const nextHandler = nextApp.getRequestHandler();
 
-const dev = process.env.NODE_ENV !== "production";
-const PORT = process.env.PORT || 3000;
+/** Socket */
+let values = {};
 
-const app = next({
-	dir: ".",
-	dev,
+io.on("connection", (socket) => {
+	io.emit("user:update", io.engine.clientsCount);
+
+	// join the room
+	socket.on("room:join", (data) => {
+		console.log("A user joined " + data.room);
+		socket.room = data.room;
+		socket.join(data.room);
+		io.sockets.in(data.room).emit("user:update", Object.keys(io.sockets.clients(() => data.room).sockets).length);
+	});
+
+	// request an update
+	socket.on("request-update", () => {
+		console.log(`A Socket has requested an update`);
+		io.sockets.to(socket.room).emit("request-update");
+	});
+
+	// clients in the rooms sends the update
+	socket.on("send-update", (value) => {
+		console.log(`Socket ${socket.id} sent an update`);
+		io.sockets.to(socket.room).emit("update-received", value);
+	});
+
+	// live coding
+	socket.on("client:text-update", (data) => {
+		socket.broadcast.to(socket.room).emit("server:text-update", data || "");
+	});
+
+	socket.on("room:leave", (data) => {
+		console.log("A user has left " + data.room);
+		io.sockets.in(data.room).emit("user:update", Object.keys(io.sockets.clients(() => data.room).sockets).length);
+		socket.leave(data.room);
+	});
+
+	socket.on("disconnect", () => {
+		io.emit("user:update", io.engine.clientsCount);
+	});
 });
 
-const handle = app.getRequestHandler();
-const apiRoutes = require("./server/routes/api");
+/** Server */
+nextApp.prepare().then(() => {
+	app.use(morgan("dev"));
+	app.use(bodyParser.json());
 
-app.prepare().then(() => {
-	const server = Express();
-
-	server.use(morgan("dev"));
-	server.use(bodyParser.json());
-
-	server.use(
+	app.use(
 		session({
 			saveUninitialized: false,
 			resave: true,
@@ -44,25 +82,20 @@ app.prepare().then(() => {
 		}),
 	);
 
-	server.use(
+	app.use(
 		bodyParser.urlencoded({
 			extended: true,
 		}),
 	);
 
-	server.use(
-		"/monaco-editor-external",
-		Express.static(`${__dirname}/node_modules/@timkendrick/monaco-editor/dist/external`),
-	);
+	app.all("/templates/*", (req, res) => app.render404(req, res));
+	app.use("/api", apiRoutes);
 
-	server.all("/templates/*", (req, res) => app.render404(req, res));
-	server.use("/api", apiRoutes);
-
-	server.get("/test", (req, res) => {
+	app.get("/test", (req, res) => {
 		app.render(req, res, "/test", {});
 	});
 
-	server.get("/random", (req, res) => {
+	app.get("/random", (req, res) => {
 		let route = "/";
 
 		// Generate a random route
@@ -74,7 +107,23 @@ app.prepare().then(() => {
 		res.redirect(route);
 	});
 
-	server.get("/:name", async (req, res) => {
+	app.get("/random/room", (req, res) => {
+		let route = "/live/";
+
+		// Generate a random route
+		const a = "abcdefghijklmnopqrstuvwxyz0123456789";
+		for (let i = 0; i < 7; i++) {
+			route += a[Math.floor(Math.random() * a.length)];
+		}
+
+		res.redirect(route);
+	});
+
+	app.get("/live/:room", async (req, res) => {
+		nextApp.render(req, res, "/templates/live", { room: req.params.room });
+	});
+
+	app.get("/:name", async (req, res) => {
 		const item = await Clipboard.findOne({
 			name: req.params.name.toLowerCase(),
 		});
@@ -89,13 +138,13 @@ app.prepare().then(() => {
 			};
 		}
 
-		app.render(req, res, "/templates/form", params);
+		nextApp.render(req, res, "/templates/form", params);
 	});
 
-	server.get("*", (req, res) => handle(req, res));
+	app.get("*", (req, res) => nextHandler(req, res));
 
 	server.listen(PORT, (err) => {
 		if (err) throw err;
-		console.log(`Listening at: --> http://localhost:${PORT} <--`);
+		console.log(`Listening at: http://localhost:${PORT}`);
 	});
 });

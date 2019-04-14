@@ -7,6 +7,7 @@ import "highlight.js/styles/tomorrow-night.css";
 import { withRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+import withSocket from "../../components/withSocket";
 import DragAndDrop from "../../components/DragAndDrop";
 import client from "../../common/utils/api";
 
@@ -111,12 +112,11 @@ const Page = ({
 
 			if (content) {
 				if (name && content) deleteNote();
-
 				editor.setAttribute("placeholder", `// Whoops! No Code!`);
 			} else {
 				editor.setAttribute(
 					"placeholder",
-					`// Just write some code,\n// the language will be automatically detected\n// Syntax highlight provided by Highlight.js`,
+					`// Write some code, or drag and drop a file inside the editor\n// Syntax highlight provided by Highlight.js`,
 				);
 			}
 
@@ -126,6 +126,8 @@ const Page = ({
 
 	const submit = async (e) => {
 		e.preventDefault();
+
+		if (!editorValue) return;
 
 		await client.create({ name, content: editorValue.trim(), language });
 
@@ -281,4 +283,4 @@ const Page = ({
 	);
 };
 
-export default withRouter(Page);
+export default withRouter(withSocket(Page));
