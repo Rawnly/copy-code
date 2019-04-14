@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-
+import EmojiRender from "react-emoji-render";
+import { IoLogoTwitter, IoLogoGithub, IoLogoInstagram } from "react-icons/io";
 import "../styles/link.scss";
 
 const Page = () => {
@@ -25,7 +26,7 @@ const Page = () => {
 			</Link>
 			<small className="version">v1.0</small>
 			<small className="author">
-				Made with a ⌨️ by{" "}
+				<EmojiRender text="Brought to you by " />
 				<a className={"underline"} href="https://github.com/rawnly">
 					Federico Vitale
 				</a>

@@ -58,6 +58,10 @@ app.prepare().then(() => {
 	server.all("/templates/*", (req, res) => app.render404(req, res));
 	server.use("/api", apiRoutes);
 
+	server.get("/test", (req, res) => {
+		app.render(req, res, "/test", {});
+	});
+
 	server.get("/random", (req, res) => {
 		let route = "/";
 
