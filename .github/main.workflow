@@ -16,5 +16,5 @@ action "Deploy on Dokku" {
 action "HTTP client" {
   uses = "swinton/httpie.action@8ab0a0e926d091e0444fcacd5eb679d2e2d4ab3d"
   needs = ["Deploy on Dokku"]
-  args = "POST, https://notifications.rawnly.com/deployment, status=success&app=highlight"
+  args = ["POST, https://notifications.rawnly.com/deployment, status=success&app=highlight"]
 }
