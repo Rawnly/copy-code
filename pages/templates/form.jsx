@@ -11,6 +11,47 @@ import client from "../../common/utils/api";
 
 const isServer = () => typeof window === "undefined";
 
+const Toast = ({ children, visible: v, isMouseOver, ...props }) => {
+	const visible = v || isMouseOver;
+	const t = props.theme || "light";
+
+	const theme = {
+		dark: {
+			color: "#fff",
+			background: "#111",
+		},
+		light: {
+			color: "#111",
+			background: "#fff",
+		},
+		danger: {
+			color: "white",
+			background: "#FF0000",
+		},
+		magenta: {
+			color: "white",
+			background: "#FF0080",
+		},
+	};
+
+	return (
+		<div
+			className="toast"
+			style={{
+				transition: "all .2s ease-in-out",
+				opacity: visible ? 1 : 0,
+				position: "fixed",
+				bottom: visible ? 25 : -100,
+				left: "50%",
+				transform: `translateX(-50%)`,
+				...theme[t],
+			}}
+			{...props}>
+			{children}
+		</div>
+	);
+};
+
 const Page = ({
 	router: {
 		query: { name, content },
@@ -20,6 +61,8 @@ const Page = ({
 	const [isWriting, setIsWriting] = useState(false);
 	const [language, setLanguage] = useState(null);
 	const [orLanguage, setOrLanguage] = useState(null);
+	const [isToastVisible, setToastVisiblity] = useState(false);
+	const [mouseStatus, setMouseStatus] = useState(false);
 
 	function hightlight(code) {
 		if (!code) return "";
@@ -52,7 +95,7 @@ const Page = ({
 			} else {
 				editor.setAttribute(
 					"placeholder",
-					`// Just write some code,\n// the language will be automatically detected\n\n// Syntax highlight provided by Highlight.js`,
+					`// Just write some code,\n// the language will be automatically detected\n// Syntax highlight provided by Highlight.js`,
 				);
 			}
 
@@ -64,7 +107,13 @@ const Page = ({
 		e.preventDefault();
 
 		await client.create({ name, content: editorValue.trim(), language });
-		window.location = "/";
+		// window.location = "/";
+
+		setToastVisiblity(true);
+
+		setTimeout(() => {
+			setToastVisiblity(false);
+		}, 3000);
 	};
 
 	if (isServer()) return null;
@@ -88,12 +137,14 @@ const Page = ({
 				padding={25}
 				style={{
 					fontFamily: '"Fira code", "Fira Mono", monospace',
-					fontSize: 18,
+					fontSize: 14,
 					width: "100%",
 					height: "90%",
+					lineHeight: 1.3,
 					border: "1px solid #222",
 					borderRadius: "10px",
 					marginBottom: 10,
+					overflowY: "scroll",
 				}}
 				textareaId="editor"
 			/>
@@ -149,9 +200,25 @@ const Page = ({
 					</button>
 				</CopyToClipboard>
 			) : (
-				<button className="button warning" style={{ alignSelf: "flex-end" }} disabled={isWriting} onClick={submit}>
+				<button
+					className="button warning full-on-mobile"
+					style={{ alignSelf: "flex-end" }}
+					disabled={isWriting}
+					onClick={submit}>
 					<b>Create</b>
 				</button>
+			)}
+			{window && (
+				<Toast
+					visible={isToastVisible}
+					onMouseEnter={() => setMouseStatus(true)}
+					onMouseLeave={() => setMouseStatus(false)}
+					isMouseOver={mouseStatus}>
+					<div className="message">{window.location.href}</div>
+					<CopyToClipboard text={window.location.href} onClick={() => setToastVisiblity(false)}>
+						<button className="button small primary">Copy</button>
+					</CopyToClipboard>
+				</Toast>
 			)}
 		</section>
 	);
