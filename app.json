@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"dokku": {
-			"postdeploy": "curl -X POST https://notifications.rawnly.com/deployment?state=success&app=dokku"
+			"postdeploy": "curl -X POST https://notifications.rawnly.com/deployment?state=success&app=highlight"
 		}
 	}
 }
