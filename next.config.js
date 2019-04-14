@@ -9,12 +9,4 @@ const compose = require("next-compose-plugins");
 // 	withCSS
 // )
 
-module.exports = compose([
-	[
-		withSass,
-		{
-			cssModules: true,
-		},
-	],
-	withCSS,
-]);
+module.exports = compose([withSass, withCSS]);
