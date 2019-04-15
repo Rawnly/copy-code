@@ -1,6 +1,7 @@
 FROM debian:stable-slim
 
 RUN ls
+RUN apt-get update
 
-COPY entrypoint.sh
+ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
