@@ -1,8 +1,7 @@
 import React, { useState, useEffect, Component } from "react";
 import Link from "next/link";
 import withSocket from "../components/withSocket";
-import EmojiRender from "react-emoji-render";
-import { IoLogoTwitter, IoLogoGithub, IoLogoInstagram } from "react-icons/io";
+import Layout from "../components/Layout";
 import "../styles/link.scss";
 
 class Page extends Component {
@@ -16,7 +15,7 @@ class Page extends Component {
 
 	render() {
 		return (
-			<section style={{ background: "#111", color: "#fff" }}>
+			<section>
 				<div className="toast-area" />
 				<div
 					style={{

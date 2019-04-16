@@ -87,6 +87,10 @@
 	color: #FFFFFF;
 }
 
+.button.warning.pulse {
+	background: #ff3395;
+}
+
 .button.warning:hover {
 	color: #FF0080;
 	background: transparent;
@@ -96,6 +100,10 @@
 	background-color: #0076ff;
 	border: 1px solid #0076ff;
 	color: #FFFFFF;
+}
+
+.button.highlight.pulse {
+	background: #0086ff;
 }
 
 .button.highlight:hover {
@@ -126,7 +134,10 @@
 	border-color: #eaeaea !important;
 }
 
-
+.button.pulse {
+	animation: zoomUP 1s infinite ease-in-out;
+	opacity: .8;
+}
 
 
 @media screen and (max-width: 500px) {
@@ -135,5 +146,12 @@
 		min-height: 60px;
 		height: 60px;
 		max-height: 60px;
+	}
+}
+
+@keyframes zoomUP {
+	100% {
+		opacity: 0;
+		transform: scale(1.35);
 	}
 }

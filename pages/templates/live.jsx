@@ -96,6 +96,21 @@ class Page extends Component {
 		});
 	}
 
+	showCopyNotification = () => {
+		this.setState(
+			{
+				copyNotification: true,
+			},
+			() => {
+				setTimeout(() => {
+					this.setState({
+						copyNotification: false,
+					});
+				}, 1000);
+			},
+		);
+	};
+
 	updateEditorValue = (code) => {
 		this.props.socket.emit("client:text-update", code);
 		this.setState({
@@ -192,17 +207,27 @@ class Page extends Component {
 						flexDirection: "row",
 						width: "100%",
 					}}>
-					<CopyToClipboard text={`https://hightlight.rawnly.com/${this.props.room}`}>
-						<button className="button warning" style={{ alignSelf: "flex-start" }}>
-							<b>Invite People</b>
-						</button>
-					</CopyToClipboard>
+					{window && (
+						<CopyToClipboard text={window.location.href} onClick={this.showCopyNotification}>
+							<button className="button warning" style={{ alignSelf: "flex-start" }}>
+								<b>Invite People</b>
+							</button>
+						</CopyToClipboard>
+					)}
 					<CopyToClipboard text={this.state.editorValue}>
 						<button className="button highlight" style={{ alignSelf: "flex-end" }}>
 							<b>Copy to Clipboard</b>
 						</button>
 					</CopyToClipboard>
 				</div>
+				{window && this.state.copyNotification && (
+					<Toast visible={this.state.copyNotification}>
+						<div className="message">
+							<code>{window.location.href}</code>
+						</div>
+						<div>Link Copied to clipboard!</div>
+					</Toast>
+				)}
 				{this.state.connectedUsers > 1 && (
 					<Toast visible={this.state.showToast}>A user {this.state.hasJoined ? "joined" : "left"}.</Toast>
 				)}
